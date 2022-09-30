@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use PDF;
 
 class LoginController extends Controller
 {
@@ -15,7 +16,7 @@ class LoginController extends Controller
     {
         return view('register');
     }
-    public function storeuser(Request $request)
+    public function registerstore(Request $request)
     {
         $request->validate([
             'first_name' =>'required',
@@ -45,7 +46,7 @@ class LoginController extends Controller
             $message->subject('Verification OTP');
             });
         
-            return view('otpvalidate',compact('mail_id'));
+            return view('otpvalidate',compact('mail_id'))->with('success', 'OTP sent successfully');
         }else{
             return view('register');
         }
@@ -57,10 +58,14 @@ class LoginController extends Controller
         $validate_query = Register::where('email',$email_id)->where('otp',$otp)->first();
         if(!empty($validate_query))
         {
-            return view('login')->with('success', 'OTP Verified');
+            return redirect()->route('login.view')->with('success', 'OTP Verified');
         }else{
-            return view('register')->with('error', 'Invalide OTP');
+            return redirect()->route('view.register')->with('error', 'Invalide OTP');
         }
+    }
+    public function loginform()
+    {
+        return view('login');
     }
     public function login(Request $request)
     {
@@ -75,11 +80,39 @@ class LoginController extends Controller
                          ->first();
         if(Hash::check($request->password,$user->password))
         {   
-            return view('home'); 
+            session()->put('id',$user->id);
+            session()->put('email',$user->email);
+            session()->put('username',$user->username);
+
+           return redirect()->route('view.home');
         }else{ 
             return view('login')->with('error', 'Invalide OTP');;
         }
                          
         
+    }
+    public function home()
+    {
+        $user_id = session()->get('id');
+        $user = DB::table('registers')
+                         ->select('*')
+                         ->where('id',$user_id)
+                         ->first();
+        return view('dashboard',compact('user')); 
+    }
+    public function download()
+    {
+        $user_id = session()->get('id');
+        $user = DB::table('registers')
+                         ->select('*')
+                         ->where('id',$user_id)
+                         ->first();
+        $pdf = PDF::loadView('download',compact('user'))->setOptions(['defaultFont' => 'sans-serif']);
+        return $pdf->download('userinfo.pdf');
+    }
+    public function logout()
+    {
+        session()->flush();
+        return redirect()->to('/');
     }
 }

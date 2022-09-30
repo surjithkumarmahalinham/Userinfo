@@ -71,7 +71,7 @@
                                 </form>
                             </div>
                             <div class="col-md-6 d-flex align-items-center">
-                                <img src="assets/images/Register.png" alt="login" class="img-fluid">
+                                <img src="assets/images/Register.png" alt="register" class="img-fluid">
                             </div>
                         </div>
                     </section>

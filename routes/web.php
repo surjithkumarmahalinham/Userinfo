@@ -13,6 +13,10 @@ use App\Http\Controllers\LoginController;
 |
 */
 Route::post('/logincheck', [LoginController::class,'login'])->name('login.check');
-Route::get('/', [LoginController::class,'register'])->name('view.register');
-Route::post('/registerstore', [LoginController::class,'storeuser'])->name('register.store');
+Route::any('/', [LoginController::class,'register'])->name('view.register');
+Route::post('/registerstore', [LoginController::class,'registerstore'])->name('register.store');
 Route::post('/otpvalid', [LoginController::class,'otpvalidate'])->name('otp.valid');
+Route::get('/login', [LoginController::class,'loginform'])->name('login.view');
+Route::get('/dashboard', [LoginController::class,'home'])->name('view.home');
+Route::get('/pdf-download', [LoginController::class,'download'])->name('download');
+Route::any('/logout', [LoginController::class,'logout'])->name('logout');
