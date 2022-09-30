@@ -1,0 +1,1 @@
+<h2>Your OTP is: {{$otp}}</h2>
